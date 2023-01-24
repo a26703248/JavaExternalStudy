@@ -1,0 +1,4 @@
+#Mon Jan 23 20:46:26 CST 2023
+configuration*?=B616A717F1508D8873FE77F5D35054F32DF12BC6
+module-resource*?\:checkstyle/suppressions.xml=EF8343D7460B9B2232806D623803FB3C6E2995BE
+/home/a0909007892/JavaExternalStudy/annotation_demo1/src/test/java/study/annotation/AppTest.java=1674466194065
