@@ -6,30 +6,30 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.Gson;
-import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
 public class NIO2 {
   public static void main(String[] args) {
     NIO2 nio2 = new NIO2();
-    nio2.demo3();
   }
 
-  static void demo1() {
+  public void demo1() {
     // 讀取資料夾內所有檔案路徑
-    try (Stream<Path> list = Files.list(Paths.get("src/main/resources"));) {
+    try (Stream<Path> list = Files.list(Paths.get("src/main/data/resources"));) {
       list.forEach(System.out::println);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  static void demo2() {
+  public void demo2() {
     // 讀檔
-    try (Stream<String> lines = Files.lines(Paths.get("src/main/resources/demo1.txt"))) {
+    try (Stream<String> lines = Files.lines(Paths.get("src/main/resources/data/demo1.txt"))) {
       lines.forEach(System.out::println);
     } catch (Exception e) {
       e.printStackTrace();
@@ -38,13 +38,11 @@ public class NIO2 {
 
   public void demo3() {
     try (
-        CSVReader csvr = new CSVReader(new FileReader("src/main/resources/demo2.csv"));
-        FileWriter fw = new FileWriter("src/main/resources/demo3.json");) {
+        FileReader fr = new FileReader("src/main/resources/data/demo2.csv");
+        FileWriter fw = new FileWriter("src/main/resources/target/demo3.json");) {
 
-      List<DemoOne> res = csvr.readAll()
-          .stream()
-          .map(DemoOne::new)
-          .collect(Collectors.toList());
+      List<CSVBean> res = new CsvToBeanBuilder<CSVBean>(fr)
+          .withType(CSVBean.class).build().parse();
 
       new Gson().toJson(res, fw);
     } catch (Exception e) {
@@ -52,38 +50,21 @@ public class NIO2 {
     }
   }
 
-}
+  public void demo4() {
+    try (
+        FileReader fr = new FileReader("src/main/resources/data/demo2.csv");
+        FileWriter fw = new FileWriter("src/main/resources/target/demo2.csv");) {
+      List<CSVBean> origin = new CsvToBeanBuilder<CSVBean>(fr)
+          .withType(CSVBean.class)
+          .build()
+          .parse();
 
-class DemoOne {
-  private String seq;
-  private String name;
-
-  public DemoOne() {
+      StatefulBeanToCsv<CSVBean> sbtc = new StatefulBeanToCsvBuilder<CSVBean>(fw)
+          .build();
+      sbtc.write(origin);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
-  public DemoOne(String seq, String name) {
-    this.seq = seq;
-    this.name = name;
-  }
-
-  public DemoOne(String... strings) {
-    this.seq = strings[0];
-    this.name = strings[1];
-  }
-
-  public String getSeq() {
-    return seq;
-  }
-
-  public void setSeq(String seq) {
-    this.seq = seq;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }
