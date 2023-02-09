@@ -13,6 +13,8 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
+import study.bean.CSVBean;
+
 public class NIO2 {
   public static void main(String[] args) {
     NIO2 nio2 = new NIO2();
